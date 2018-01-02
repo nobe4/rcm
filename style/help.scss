@@ -1,0 +1,40 @@
+label[for="help-toggle"] {
+	display: block;
+	max-width: 50em;
+	margin: 1em auto 0;
+	text-align: left;
+	cursor: pointer;
+}
+#help-toggle {
+	display: none;
+	&:checked ~ #help {
+		display: block;
+	}
+}
+#help {
+	display: none;
+	max-width: 50em;
+	margin: auto;
+	text-transform: none;
+	text-align: left;
+
+	a {
+		color: black;
+	}
+
+	dl {
+		display: grid;
+	 grid-template-columns: max-content auto;
+	}
+	dt {
+		grid-column-start: 1;
+		font-weight: bold;
+		padding-right: 0.5em;
+		text-transform: capitalize;
+	}
+
+	dd {
+		grid-column-start: 2;
+		margin: 0;
+	}
+}
