@@ -116,53 +116,53 @@ class Chord {
 
 // List of all main scales with their interval and tones from the root.
 class Scale {
-          static names = {
-            major: { tones: [2, 4, 5, 7, 9, 11], intervals: [2, 2, 1, 2, 2, 2, 1] },
-            'harmonic minor': { tones: [2, 3, 5, 7, 8, 10], intervals: [2, 1, 2, 2, 1, 2, 2] },
-            pentatonic: { tones: [2, 4, 7, 9], intervals: [2, 2, 3, 2, 2, 3] }
-          }
+  static names = {
+    major: { tones: [2, 4, 5, 7, 9, 11], intervals: [2, 2, 1, 2, 2, 2, 1] },
+    'harmonic minor': { tones: [2, 3, 5, 7, 8, 10], intervals: [2, 1, 2, 2, 1, 2, 2] },
+    pentatonic: { tones: [2, 4, 7, 9], intervals: [2, 2, 3, 2, 2, 3] }
+  }
 
-          constructor (root, ...data) {
-            // Treat the root
-            if (!root) return
+  constructor (root, ...data) {
+    // Treat the root
+    if (!root) return
 
-            if (notes.indexOf(root) === -1) {
-              throw new Error(`invalid note name: ${root}`)
-            }
-            this.notes = [root]
-            this.name = 'major' // default name
+    if (notes.indexOf(root) === -1) {
+      throw new Error(`invalid note name: ${root}`)
+    }
+    this.notes = [root]
+    this.name = 'major' // default name
 
-            // Treat the data
-            if (!data) return
+    // Treat the data
+    if (!data) return
 
-            if (data.length === 1) {
-              // Data is the scale name, compute the notes
-              const scale = Scale.names[data[0]]
-              if (scale) {
-                this.name = data
-                const rootIndex = notes.indexOf(root)
-                for (let i = 0, j = scale.tones.length; i < j; i++) {
-                  this.notes.push(notes[(rootIndex + scale.tones[i]) % 12])
-                }
-              } else {
-                throw new Error(`invalid arguments: ${data}`)
-              }
-            } else {
-              // Data is the list of notes names, TODO
-              throw new Error('doesn\'t handle multiple arguments yet')
-            }
-          }
+    if (data.length === 1) {
+      // Data is the scale name, compute the notes
+      const scale = Scale.names[data[0]]
+      if (scale) {
+        this.name = data
+        const rootIndex = notes.indexOf(root)
+        for (let i = 0, j = scale.tones.length; i < j; i++) {
+          this.notes.push(notes[(rootIndex + scale.tones[i]) % 12])
+        }
+      } else {
+        throw new Error(`invalid arguments: ${data}`)
+      }
+    } else {
+      // Data is the list of notes names, TODO
+      throw new Error('doesn\'t handle multiple arguments yet')
+    }
+  }
 
-          static random (root) {
-            if (!root) root = notes[Math.random() * notes.length << 0]
+  static random (root) {
+    if (!root) root = notes[Math.random() * notes.length << 0]
 
-            const names = Object.keys(Scale.names)
-            const name = names[Math.random() * names.length << 0]
+    const names = Object.keys(Scale.names)
+    const name = names[Math.random() * names.length << 0]
 
-            return new Scale(root, name)
-          }
+    return new Scale(root, name)
+  }
 
-          toString () {
-            return `${this.notes[0]} ${this.name}: ${this.notes.join(' ')}`
-          }
+  toString () {
+    return `${this.notes[0]} ${this.name}: ${this.notes.join(' ')}`
+  }
 }
