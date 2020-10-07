@@ -2,63 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Random Chord Machine</title>
+	<title>RCM</title>
 	<link rel="stylesheet" href="style/style.css">
 </head>
 <body>
-	<h1>Random Chord Machine</h1>
-
-	<div id="rcm">
-		<ol id="chords">
-		</ol>
-		<div class="controls">
-			<div class="line">
-				<button id="playPause" onclick="playPause();">Play</button>
-				<button id="metronome" onclick="updateMetronome();">Metro</button>
-				<button id="reload" onclick="reload();">Reload</button>
-			</div>
-			<div class="line">
-				<button id="notes" onclick="displayNotes();">Notes</button>
-				<button id="random" onclick="updateRandom();">Equal</button>
-				<button id="modulation" onclick="updateModulation();">Simple</button>
-			</div>
-			<div class="line">
-				<input id="tempo" name="tempo" type="number" min="30" max="300" step="1" value="120" onchange="updateTempo();">
-				<input id="duration" name="duration" type="number" min="16" max="128" step="1" value="32" onchange="updateDuration();">
-				<input id="volume" name="volume" type="number" min="0" max="100" step="1" value="80" onchange="updateVolume();">
-			</div>
-		</div>
-	</div>
-
-	<label for="help-toggle">help</label>
-	<input id="help-toggle" type="checkbox">
-	<div id="help">
-		<p>
-			Hey, welcome to RCM. <br>
-			As you can already see, it's generating music for you. <br>
-			The notation is based on the <a href="https://en.wikipedia.org/wiki/Chord_(music)#Tabular_notation">tabular notation</a> with the added <b>S</b> for silence. A chord with no modulation (maj, min,&nbsp;...) is describing the root note alone.<br>
-			The symbols are showing the rythm used for each chord, if you want to see the chord's composition, hit <b>notes</b>. <br> <br>
-			You can play along with the different parameters:
-		</p>
-		<dl>
-			<dt>Play</dt><dd>Self explanatory.</dd>
-			<dt>Metro</dt><dd>Add a tick every quarter notes.</dd>
-			<dt>Reload</dt><dd>Reload the chords.</dd>
-			<dt>Notes</dt><dd>Display the notes forming the chord.</dd>
-			<dt id="help-random">Equal</dt><dd>Change the rythm generation method.</dd>
-			<dt id="help-modulation">simple</dt><dd>The list of available modulations.</dd>
-			<dt id="help-tempo">120</dt><dd>The tempo against the quarter note.</dd>
-			<dt id="help-duration">16</dt><dd>The number of 16th notes you want.</dd>
-			<dt id="help-volume">80</dt><dd>The volume.</dd>
-		</ol>
-	</div>
-	
-	<script src="js/synth.js"></script>
-	<script src="js/tick.js"></script>
-	<script src="js/midi.js"></script>
-	<script src="js/time.js"></script>
-	<script src="js/chord.js"></script>
-	<script src="js/looper.js"></script>
-	<script src="js/demo.js"></script>
+	<li><a href="/rcm.html">Random Chord Machine</a></li>
+	<li><a href="/interval.html">Interval Exercise</a></li>
 </body>
 </html>
