@@ -1,45 +1,44 @@
 #chords {
+  padding: 0;
+  text-align: center;
 
-	padding: 0;
-	text-align: center;
+  .chord {
+    vertical-align: top;
+    list-style-type: none;
+    display: inline-block;
+    margin: 1em 2em;
+    text-align: center;
 
-	.chord {
-		vertical-align: top;
-		list-style-type: none;
-		display: inline-block;
-		margin: 1em 2em;
-		text-align: center;
+    &.active {
+      border-bottom: 3px solid black;
+    }
 
-		&.active {
-			border-bottom: 3px solid black;
-		}
+    > * {
+      font-size: $font-size;
+      &.rhythm {
+        font-size: $font-size/2;
+      }
+    }
 
-		> *{
-			font-size: $font-size;
-			&.rhythm {
-				font-size: $font-size/2;
-			}
-		}
+    .name {
+      text-transform: uppercase;
+    }
+    .modulation {
+      text-transform: lowercase;
+    }
 
-		.name {
-			text-transform: uppercase;
-		}
-		.modulation {
-			text-transform: lowercase;
-		}
+    .rhythm {
+      display: block;
+    }
 
-		.rhythm {
-			display: block;
-		}
-
-		.details {
-			display: none;
-			list-style: none;
-			font-size: 1.5em;
-			padding: 0.5em 0;
-		}
-	}
-	&.showNotes .chord .details{
-		display: block;
-	}
+    .details {
+      display: none;
+      list-style: none;
+      font-size: 1.5em;
+      padding: 0.5em 0;
+    }
+  }
+  &.showNotes .chord .details {
+    display: block;
+  }
 }

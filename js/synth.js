@@ -13,17 +13,17 @@ class AudioUnit {
   time () { return this.audioCtx.currentTime }
 
   /* setVolume: Change the current volume. Act by tweaking the gain's gain.
-	 * params:
-	 *     volume: The new volume to use.
-	 */
+   * params:
+   *     volume: The new volume to use.
+   */
   setVolume (volume) {
     this.volume = volume
     this.start()
   }
 
   /* start and stop: While the audio unit can be called/stopped in the futur,
-	 * we want to change their volume now. Those functions perform just that.
-	 */
+   * we want to change their volume now. Those functions perform just that.
+   */
   start () { this.master.gain.setValueAtTime(this.volume, this.time()) }
   stop () { this.master.gain.setValueAtTime(0, this.time()) }
 }
@@ -44,15 +44,23 @@ class Synth extends AudioUnit {
     this.compressor.connect(this.master)
   }
 
+  /* play1second: Play the pitch for 1 second
+   * params:
+   *     pitch: The frequency to play.
+   */
+  play1second (pitch) {
+    this.play(pitch, this.time(), this.time() + 1)
+  }
+
   /* play: Play the sound.
-	 * params:
-	 *     pitch: The frequency to play.
-	 *     start: Time at which to start playing the sound.
-	 *     end:   Time at which to stop playing the sound.
-	 */
+   * params:
+   *     pitch: The frequency to play.
+   *     start: Time at which to start playing the sound.
+   *     end:   Time at which to stop playing the sound.
+   */
   play (pitch, start, end) {
     // -1 is a silence
-    if (pitch == -1) {
+    if (pitch === -1) {
       return
     }
 
@@ -84,9 +92,9 @@ class Synth extends AudioUnit {
  */
 class Tick extends AudioUnit {
   /* play: Play the sound.
-	 * params:
-	 *     time: Time at which to play the sound.
-	 */
+   * params:
+   *     time: Time at which to play the sound.
+   */
   play (time) {
     var oscillator = this.audioCtx.createOscillator()
     oscillator.type = 'sine'

@@ -6,6 +6,18 @@ class Note {
   // There are 12 tones in standard western tuning.
   static count = 12
 
+  constructor (note, octave) {
+    if (isFinite(String(note)) && note >= 0 && note <= 12) {
+      // Name is a number, try to add it from the name list.
+      this.name = note
+    } else {
+      // Name is the note name, add it directly.
+      Note.validate(note)
+      this.name = Note.index(note)
+    }
+    this.octave = (octave !== 0 && !octave) ? 4 : octave // default to octave 4
+  }
+
   // Index compute the index relative to the note names.
   static index (name) {
     Note.validate(name)
@@ -33,6 +45,39 @@ class Note {
     }
   }
 
+  // fromMidi create a note from the midi value.
+  static fromMidi (midi) {
+    if (midi < 21 || midi > 108) throw new Error(`invalid midi ${midi}`)
+
+    // List all possible note to simplify the computation to a single modulo.
+    const names = this.names[(midi - 21) % 12]
+
+    // Use the same method but move the change to the note between B and C
+    const octave = Math.floor((midi - 12) / 12)
+
+    return new Note(names[0], octave)
+  }
+
+  // toMidi exports the midi value of the note
+  toMidi () {
+    return (
+      // Change of octave happens between B and C, shift 9 semitones to reflect
+      // that.
+      ((this.name + 9) % 12) +
+
+      // Add the octave value
+      (12 * (this.octave + 1))
+    )
+  }
+
+  // frequency converts the note to its Hertz frequency.
+  frequency () {
+    // Using http://www.glassarmonica.com/science/frequency_midi.php
+    // f = 27.5 * 2 ^ ((midi - 21)/12)
+    // Midi notes are from 21 (A0, 27.5Hz) to 108 (C8, 4186Hz)
+    return 27.5 * Math.pow(2, ((this.toMidi() - 21.0) / 12.0))
+  }
+
   static random () {
     return Note.allNames[Math.random() * Note.count << 0]
   }
@@ -46,6 +91,10 @@ class Note {
       throw new Error(`invalid note name: ${name}`)
     }
   }
+
+  toString () {
+    return `${Note.names[this.name][0]}${this.octave}`
+  }
 }
 
 // List of all main intervals with their names.
@@ -56,30 +105,47 @@ class Interval {
     // Treat the root
     if (!root) return
 
-    Note.validate(root)
-
-    this.notes = [root]
+    if (root instanceof Note) {
+      this.notes = [root]
+    } else {
+      Note.validate(root)
+      this.notes = [new Note(root)]
+    }
 
     // Treat the data
-    if (!data) return
+    if (data === 0 || data) this.setData(data)
+  }
 
+  setData (data) {
+    // Data is a the second note, compute the interval.
     if (Note.isValid(data)) {
-      // Data is a the second note, compute the interval.
-      this.notes.push(data)
+      this.notes.push(new Note(data))
+
       let diff = Note.index(data) - Note.index(root)
       if (diff < 0) diff += 12
       this.interval = diff
-    } else if (Interval.names.includes(data)) {
+
+      return
+    }
+
+    if (Interval.names.includes(data)) {
       // Data is the interval name, compute the new note.
       this.interval = Interval.names.indexOf(data)
-      this.notes.push(Note.name((Note.index(root) + this.interval) % 12))
     } else {
       // Data is the number of steps from the root.
       this.interval = Number(data)
-      if (!this.interval) throw new Error(`invalid data: '${data}'`)
-
-      this.notes.push(Note.name((Note.index(root) + this.interval) % 12))
+      if (!this.interval && this.interval !== 0) throw new Error(`invalid data: '${data}'`)
     }
+
+    let octave = 4
+    const noteIndex = (this.notes[0].name + this.interval) % 12
+    if (noteIndex > 3) octave = 5
+
+    this.notes.push(new Note(noteIndex, octave))
+  }
+
+  name () {
+    return Interval.names[this.interval]
   }
 
   static random (root) {
@@ -88,6 +154,10 @@ class Interval {
     const interval = Math.random() * Interval.names.length << 0
 
     return new Interval(root, interval)
+  }
+
+  frequencies () {
+    return this.notes.map(x => x.frequency())
   }
 
   toString () {
@@ -125,7 +195,7 @@ class Chord {
     this.name = '' // default name
 
     // Treat the data
-    if (!data || data.length === 0) return
+    if (data !== 0 && (!data || data.length === 0)) return
 
     if (data.length === 1) {
       // Data is the chord name, compute the notes
@@ -167,7 +237,7 @@ class Scale {
     pentatonic: { tones: [2, 4, 7, 9], intervals: [2, 2, 3, 2, 2, 3] }
   }
 
-  static allNames =Object.keys(Scale.names)
+  static allNames = Object.keys(Scale.names)
 
   constructor (root, ...data) {
     // Treat the root
@@ -179,7 +249,7 @@ class Scale {
     this.name = 'major' // default name
 
     // Treat the data
-    if (!data) return
+    if (data !== 0 && (!data || data.length === 0)) return
 
     if (data.length === 1) {
       // Data is the scale name, compute the notes

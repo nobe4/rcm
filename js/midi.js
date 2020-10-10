@@ -20,7 +20,7 @@ function mtf (midi) {
  */
 function mtnn (midi) {
   // -1 is a silence
-  if (midi == -1) return ['s', '', '']
+  if (midi === -1) return ['s', '', '']
 
   // List all possible note to simplify the computation to a single modulo.
   const note = ['a', 'a#', 'b', 'c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#'][(midi - 21) % 12]
