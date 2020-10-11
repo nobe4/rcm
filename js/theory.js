@@ -99,7 +99,11 @@ class Note {
 
 // List of all main intervals with their names.
 class Interval {
-  static names = ['unison', 'minor 2nd', 'major 2nd', 'minor 3rd', 'major 3rd', 'perfect 4th', 'tritone', 'perfect 5th', 'minor 6th', 'major 6th', 'minor 7th', 'major 7th', 'octave']
+  static names = [
+    'unison', 'minor 2nd', 'major 2nd', 'minor 3rd', 'major 3rd',
+    'perfect 4th', 'tritone', 'perfect 5th', 'minor 6th', 'major 6th',
+    'minor 7th', 'major 7th', 'octave', 'minor 9th', 'major 9th',
+    'minor 10th', 'major 10th', 'perfect 11th']
 
   constructor (root, data) {
     // Treat the root
@@ -137,11 +141,27 @@ class Interval {
       if (!this.interval && this.interval !== 0) throw new Error(`invalid data: '${data}'`)
     }
 
-    let octave = 4
-    const noteIndex = (this.notes[0].name + this.interval) % 12
-    if (noteIndex > 3) octave = 5
+    // Compute the new note name from the interval.
+    const noteIndex = this.notes[0].name + this.interval
 
-    this.notes.push(new Note(noteIndex, octave))
+    // Add the note with the default octave, use %12 to get the right note name.
+    this.notes.push(new Note(noteIndex % 12))
+
+    // Check if there is an octave change.
+    if (
+      // interval is above an octave
+      (this.interval > 12) ||
+
+      // index is above 15, it needs to be above 15 to go around. e.g.:
+      // E + minor 6th = C => 7 + 8 => 15
+      // G + perfect 4th = C => 10 + 5 => 15
+      (noteIndex >= 15) ||
+
+      // If the starting note is below C and the second note is above C.
+      (this.notes[0].name < 3 && noteIndex >= 3)
+    ) {
+      this.notes[1].octave = this.notes[0].octave + 1
+    }
   }
 
   name () {
