@@ -97,8 +97,8 @@ class Note {
   }
 }
 
-// List of all main intervals with their names.
 class Interval {
+  // List of all main intervals with their names.
   static names = [
     'unison', 'minor 2nd', 'major 2nd', 'minor 3rd', 'major 3rd',
     'perfect 4th', 'tritone', 'perfect 5th', 'minor 6th', 'major 6th',
@@ -125,7 +125,7 @@ class Interval {
     if (Note.isValid(data)) {
       this.notes.push(new Note(data))
 
-      let diff = Note.index(data) - Note.index(root)
+      let diff = Note.index(data) - Note.index(this.notes[0].name)
       if (diff < 0) diff += 12
       this.interval = diff
 

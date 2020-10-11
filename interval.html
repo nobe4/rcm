@@ -5,21 +5,30 @@
     <title>Interval Exercises</title>
     <link rel="stylesheet" href="style/style.css" />
   </head>
-  <body>
+  <body id="interval-exercises">
     <h1>Interval Exercises</h1>
     <div>
+      <h2>Sing and name the interval</h2>
       <table>
         <tr>
+          <th>Interval</td>
+          <th>Note</td>
+        </tr>
+        <tr>
+          <td></td>
           <td id="root"></td>
+          <td></td>
           <td><button onclick="playRoot()">play</button></td>
         </tr>
         <tr>
           <td id="interval"></td>
+          <td id="target"></td>
+          <td><button onclick="showTarget()">show</button></td>
           <td><button onclick="playInterval()">play</button></td>
         </tr>
       </table>
     </div>
-    <button onclick="test()">Test</button>
+    <button onclick="reload()">reload</button>
     <script src="js/theory.js"></script>
     <script src="js/synth.js"></script>
     <script src="js/exercises/intervals.js"></script>
