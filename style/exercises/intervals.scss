@@ -1,14 +1,46 @@
 #interval-exercises {
-  table {
+  > * {
     width: 90%;
-    margin: auto;
+    margin: 0 auto 1em;
+  }
 
+  table {
     td,
     th {
       width: 25%;
       font-size: 3em;
       button {
         font-size: 1em;
+      }
+    }
+  }
+
+  summary {
+    font-size: 2em;
+    margin-bottom: 1em;
+    cursor: pointer;
+  }
+
+  #interval-selection {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 2em;
+
+    span {
+      user-select: none;
+      margin: 0 0.5em 1em 0.5em;
+
+      &,
+      label {
+        cursor: pointer;
+      }
+
+      input {
+        display: none;
+        &:checked ~ label {
+          text-decoration: underline;
+        }
       }
     }
   }

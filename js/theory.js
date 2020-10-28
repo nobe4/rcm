@@ -168,10 +168,15 @@ class Interval {
     return Interval.names[this.interval]
   }
 
-  static random (root) {
+  static random (root, allowedIntervals) {
     if (!root) root = Note.random()
 
-    const interval = Math.random() * Interval.names.length << 0
+    let interval = null
+    if (!allowedIntervals || allowedIntervals.length === 0) {
+      interval = Math.random() * Interval.names.length << 0
+    } else {
+      interval = allowedIntervals[Math.random() * allowedIntervals.length << 0]
+    }
 
     return new Interval(root, interval)
   }

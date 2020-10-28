@@ -7,28 +7,45 @@
   </head>
   <body id="interval-exercises">
     <h1>Interval Exercises</h1>
-    <div>
-      <h2>Sing and name the interval</h2>
-      <table>
-        <tr>
-          <th>Interval</td>
-          <th>Note</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td id="root"></td>
-          <td></td>
-          <td><button onclick="playRoot()">play</button></td>
-        </tr>
-        <tr>
-          <td id="interval"></td>
-          <td id="target"></td>
-          <td><button onclick="showTarget()">show</button></td>
-          <td><button onclick="playInterval()">play</button></td>
-        </tr>
-      </table>
-    </div>
-    <button onclick="reload()">reload</button>
+
+    <h2>Sing and name the interval</h2>
+    <table>
+      <tr>
+        <th>Interval</td>
+        <th>Note</td>
+        <td> <button @click="reload()">reload</button> </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td id="root">{{ interval.notes[0].toString() }}</td>
+        <td><button @click="play(0)">play</button></td>
+      </tr>
+
+      <tr>
+        <td id="interval"> {{ interval.name() }}</td>
+        <td id="target">
+          <template v-if="showInterval"> {{ interval.notes[1].toString() }} </template>
+          <button v-else @click="showTarget">show</button>
+        </td>
+        <td><button @click="play(1)">play</button></td>
+      </tr>
+    </table>
+
+    <details>
+       <summary>Change intervals</summary>
+        <div id="interval-selection">
+          <span @click="unselect()">all</span>
+          <template v-for="(interval, index) in intervalList">
+            <span>
+              <input type="checkbox" :id="index" :value="index" v-model="selectedIntervals">
+              <label :for="index">{{ interval }}</label>
+            </span>
+        </div>
+      </template>
+    </details>
+
+    <script src="js/vue.js"></script>
     <script src="js/theory.js"></script>
     <script src="js/synth.js"></script>
     <script src="js/exercises/intervals.js"></script>
