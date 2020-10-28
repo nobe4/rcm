@@ -92,8 +92,8 @@ class Note {
     }
   }
 
-  toString () {
-    return `${Note.names[this.name][0]}${this.octave}`
+  toString (includeOctave) {
+    return `${Note.names[this.name][0]}${includeOctave ? this.octave : ''}`
   }
 }
 
