@@ -33,7 +33,10 @@
     </table>
 
     <details>
-       <summary>Change intervals</summary>
+       <summary>
+         Change intervals
+         <input type="text" v-model="selectedIntervalsValue">
+       </summary>
         <div id="interval-selection">
           <span @click="unselect()">all</span>
           <template v-for="(interval, index) in intervalList">

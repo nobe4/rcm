@@ -36,10 +36,15 @@
         cursor: pointer;
       }
 
+      label:hover {
+        text-decoration: underline;
+      }
+
       input {
         display: none;
         &:checked ~ label {
-          text-decoration: underline;
+          color: white;
+          background-color: black;
         }
       }
     }
