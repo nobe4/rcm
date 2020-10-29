@@ -8,7 +8,12 @@
   <body id="interval-exercises">
     <h1>Interval Exercises</h1>
 
-    <h2>Sing and name the interval</h2>
+    <h2>
+      <template v-if="findNote"> Sing and name the note </template>
+      <template v-else> Sing and name the interval </template>
+      <button @click="toggleExercise">&#8634;</button>
+    </h2>
+
     <table>
       <tr>
         <th>Interval</td>
@@ -23,10 +28,23 @@
       </tr>
 
       <tr>
-        <td id="interval"> {{ interval.name() }}</td>
+        <td id="interval">
+          <template v-if="findNote">
+            {{ interval.name() }}
+          </template>
+          <template v-else>
+            <template v-if="answerShown"> {{ interval.name() }} </template>
+            <button v-else @click="showAnswer">show</button>
+          </template>
+        </td>
         <td id="target">
-          <template v-if="showInterval"> {{ interval.notes[1].toString() }} </template>
-          <button v-else @click="showTarget">show</button>
+          <template v-if="findNote">
+            <template v-if="answerShown"> {{ interval.notes[1].toString() }} </template>
+            <button v-else @click="showAnswer">show</button>
+          </template>
+          <template v-else>
+            {{ interval.notes[1].toString() }}
+          </template>
         </td>
         <td><button @click="play(1)">play</button></td>
       </tr>

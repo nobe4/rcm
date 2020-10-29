@@ -7,7 +7,8 @@ Vue.createApp({
     return {
       interval: Interval.random(),
       intervalList: Interval.names,
-      showInterval: false,
+      answerShown: false,
+      findNote: true,
       selectedIntervals: []
     }
   },
@@ -15,9 +16,11 @@ Vue.createApp({
     selectedIntervalsValue: {
       get () {
         // Add each found selected intervals index in a single binary number.
+        console.log(this.selectedIntervals)
         const value = this.selectedIntervals
-	  .reduce((a, b) => a + 1 << b, 0)
-        return value.toString(20)
+          .sort((a, b) => a < b)
+          .reduce((a, b) => a + (1 << b), 0)
+        return value.toString(24)
       },
       set (value) {
         this.selectedIntervals = []
@@ -25,15 +28,15 @@ Vue.createApp({
         if (!value) return
 
         // Convert to a binary string
-        const selection = parseInt(value, 20)
-	  .toString(2)
-	  .split('')
-	  .reverse()
+        const selection = parseInt(value, 24)
+          .toString(2)
+          .split('')
+          .reverse()
 
         for (var i in selection) {
-	  if (selection[i] === '1') {
-	    this.selectedIntervals.push(i)
-	  }
+          if (selection[i] === '1') {
+            this.selectedIntervals.push(i)
+          }
         }
       }
     }
@@ -41,7 +44,7 @@ Vue.createApp({
   methods: {
     reload () {
       this.interval = Interval.random(null, this.selectedIntervals)
-      this.showInterval = false
+      this.answerShown = false
     },
     unselect () {
       this.selectedIntervals = []
@@ -49,8 +52,12 @@ Vue.createApp({
     play (index) {
       synth.play1second(this.interval.notes[index].frequency())
     },
-    showTarget () {
-      this.showInterval = true
+    showAnswer () {
+      this.answerShown = true
+    },
+    toggleExercise () {
+      this.findNote = !this.findNote
+      this.reload()
     }
   }
 }
