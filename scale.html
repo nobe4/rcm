@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Scale Exercises</title>
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body id="scale-exercises" class="exercise">
+    <h1>Scale Exercises</h1>
+
+    <h2>
+      <template v-if="findNote"> Name the scale </template>
+      <template v-else> Sing the scale </template>
+      <button @click="toggleExercise">&#8634;</button>
+    </h2>
+
+    <table>
+        <th>Scale</td>
+        <th>Root</td>
+        <td> <button @click="reload()">reload</button> </td>
+      </tr>
+
+      <tr>
+        <td id="scale">
+          <template v-if="findNote"> {{ scale.name.toString() }} </template>
+          <template v-else>
+            <template v-if="answerShown"> {{ scale.name.toString() }} </template>
+            <button v-else @click="showAnswer">show</button>
+          </template>
+        </td>
+        <td id="root">{{ scale.notes[0].toString() }}</td>
+        <td><button @click="play(0)">play</button></td>
+      </tr>
+
+      <tr>
+        <th>Notes</td>
+        <td id="scale">
+          <template v-if="findNote">
+            <template v-if="answerShown"> {{ scale.notes.join(' ') }} </template>
+            <button v-else @click="showAnswer">show</button>
+          </template>
+          <template v-else>
+            {{ scale.notes.join(' ') }}
+          </template>
+        </td>
+        <td><button @click="play()">play</button></td>
+      </tr>
+    </table>
+
+    <details>
+       <summary>
+         Change Scales
+         <input type="text" v-model="selectedScalesValue">
+       </summary>
+        <div id="input-selection">
+          <span @click="unselect()">all</span>
+          <template v-for="(scale, index) in scaleList">
+            <span>
+              <input type="checkbox" :id="index" :value="index" v-model="selectedScales">
+              <label :for="index">{{ scale }}</label>
+            </span>
+        </div>
+      </template>
+    </details>
+
+    <script src="js/vue.js"></script>
+    <script src="js/theory.js"></script>
+    <script src="js/synth.js"></script>
+    <script src="js/exercises/scale.js"></script>
+  </body>
+</html>
+

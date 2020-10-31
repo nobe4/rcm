@@ -5,7 +5,7 @@
     <title>Interval Exercises</title>
     <link rel="stylesheet" href="style/style.css" />
   </head>
-  <body id="interval-exercises">
+  <body id="interval-exercises" class="exercise">
     <h1>Interval Exercises</h1>
 
     <h2>
@@ -55,7 +55,7 @@
          Change intervals
          <input type="text" v-model="selectedIntervalsValue">
        </summary>
-        <div id="interval-selection">
+        <div id="input-selection">
           <span @click="unselect()">all</span>
           <template v-for="(interval, index) in intervalList">
             <span>

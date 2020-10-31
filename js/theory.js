@@ -88,6 +88,7 @@ class Note {
 
   static validate (name) {
     if (!Note.isValid(name)) {
+      console.log(name)
       throw new Error(`invalid note name: ${name}`)
     }
   }
@@ -168,14 +169,14 @@ class Interval {
     return Interval.names[this.interval]
   }
 
-  static random (root, allowedIntervals) {
+  static random (root, allowed) {
     if (!root) root = Note.random()
 
     let interval = null
-    if (!allowedIntervals || allowedIntervals.length === 0) {
+    if (!allowed || allowed.length === 0) {
       interval = Math.random() * Interval.names.length << 0
     } else {
-      interval = allowedIntervals[Math.random() * allowedIntervals.length << 0]
+      interval = allowed[Math.random() * allowed.length << 0]
     }
 
     return new Interval(root, interval)
@@ -270,7 +271,7 @@ class Scale {
 
     Note.validate(root)
 
-    this.notes = [root]
+    this.notes = [new Note(root)]
     this.name = 'major' // default name
 
     // Treat the data
@@ -278,13 +279,9 @@ class Scale {
 
     if (data.length === 1) {
       // Data is the scale name, compute the notes
-      const scale = Scale.names[data[0]]
-      if (scale) {
-        this.name = data
-        const rootIndex = Note.index(root)
-        for (let i = 0, j = scale.tones.length; i < j; i++) {
-          this.notes.push(Note.name((rootIndex + scale.tones[i]) % 12))
-        }
+      if (Scale.names[data[0]]) {
+        this.name = data[0]
+        this.noteList()
       } else {
         throw new Error(`invalid arguments: ${data}`)
       }
@@ -294,10 +291,39 @@ class Scale {
     }
   }
 
-  static random (root) {
+  // Create the list of notes for the current scale
+  noteList () {
+    const rootIndex = this.notes[0].name
+    const tones = Scale.names[this.name].tones
+    let previousNoteMidi = this.notes[0].toMidi()
+    let octave = 4
+    for (let i = 0, j = tones.length; i < j; i++) {
+      const newNoteIndex = (rootIndex + tones[i]) % 12
+      const newNote = new Note(newNoteIndex, octave)
+
+      // Check that the midi notes are only increasing
+      const newNoteMidi = newNote.toMidi()
+      if (newNoteMidi < previousNoteMidi) {
+        // Switch octave if we ever get a smaller midi note.
+        octave++
+        newNote.octave = octave
+      }
+
+      previousNoteMidi = newNoteMidi
+      this.notes.push(newNote)
+    }
+  }
+
+  static random (root, allowed) {
     if (!root) root = Note.random()
 
-    const name = Scale.allNames[Math.random() * Scale.allNames.length << 0]
+    let index = null
+    if (!allowed || allowed.length === 0) {
+      index = Math.random() * Scale.allNames.length << 0
+    } else {
+      index = allowed[Math.random() * allowed.length << 0]
+    }
+    const name = Scale.allNames[index]
 
     return new Scale(root, name)
   }

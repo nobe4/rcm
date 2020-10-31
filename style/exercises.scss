@@ -1,4 +1,4 @@
-#interval-exercises {
+body.exercise {
   > * {
     width: 90%;
     margin: 0 auto 1em;
@@ -21,7 +21,7 @@
     cursor: pointer;
   }
 
-  #interval-selection {
+  #input-selection {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
