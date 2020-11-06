@@ -2,12 +2,19 @@
 
 var synth = new Synth()
 
-Vue.createApp({
+const app = Vue.createApp({
   data () {
     return {
       scale: Scale.random(),
       scaleList: Scale.allNames,
+      rootLocked: false,
       answerShown: false,
+      exercises: [
+        'Name the scale',
+        'Sing the scale',
+        'Name and sing the scale'
+      ],
+      currentExercise: 0,
       findScale: true,
       selectedScales: []
     }
@@ -43,7 +50,10 @@ Vue.createApp({
   },
   methods: {
     reload () {
-      this.scale = Scale.random(null, this.selectedScales)
+      this.scale = Scale.random(
+        this.rootLocked ? this.scale.notes[0].name : null,
+        this.selectedScales
+      )
       this.answerShown = false
     },
     unselect () {
@@ -54,7 +64,7 @@ Vue.createApp({
         this.scale.notes.forEach((note, i) => {
           setTimeout(() => {
             synth.play1second(note.frequency())
-          }, i * 1000)
+          }, i * 700)
         })
       } else {
         synth.play1second(this.scale.notes[index].frequency())
@@ -69,4 +79,14 @@ Vue.createApp({
     }
   }
 }
-).mount('#scale-exercises')
+)
+
+app.component('toggle-answer', {
+  props: ['answer'],
+  template: `
+    <template v-if="$parent.answerShown"> {{ answer }} </template>
+    <button v-else @click="$parent.answerShown = true">show</button>
+  `
+})
+
+app.mount('#scale-exercises')

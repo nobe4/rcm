@@ -8,18 +8,23 @@ class Note {
 
   constructor (note, octave) {
     if (isFinite(String(note)) && note >= 0 && note <= 12) {
-      // Name is a number, try to add it from the name list.
-      this.name = note
+      // Note is an index, e.g. '1'
+      note = parseInt(note, 10)
+
+      this.index = note
+      this.name = Note.indexToName(note)
     } else {
-      // Name is the note name, add it directly.
+      // Note is a name, e.g. 'A'
       Note.validate(note)
-      this.name = Note.index(note)
+
+      this.name = note
+      this.index = Note.nameToIndex(note)
     }
     this.octave = (octave !== 0 && !octave) ? 4 : octave // default to octave 4
   }
 
   // Index compute the index relative to the note names.
-  static index (name) {
+  static nameToIndex (name) {
     Note.validate(name)
     for (let index = 0; index < Note.count; index++) {
       if (Note.names[index].includes(name)) {
@@ -29,7 +34,7 @@ class Note {
   }
 
   // Name computes a note name from index with the right accidental if specified.
-  static name (index, accidental) {
+  static indexToName (index, accidental) {
     const candidates = Note.names[index]
     if (!candidates) {
       throw new Error(`invalid note index: ${index}`)
@@ -58,12 +63,12 @@ class Note {
     return new Note(names[0], octave)
   }
 
-  // toMidi exports the midi value of the note
-  toMidi () {
+  // midi exports the midi value of the note
+  midi () {
     return (
       // Change of octave happens between B and C, shift 9 semitones to reflect
       // that.
-      ((this.name + 9) % 12) +
+      ((this.index + 9) % 12) +
 
       // Add the octave value
       (12 * (this.octave + 1))
@@ -75,7 +80,7 @@ class Note {
     // Using http://www.glassarmonica.com/science/frequency_midi.php
     // f = 27.5 * 2 ^ ((midi - 21)/12)
     // Midi notes are from 21 (A0, 27.5Hz) to 108 (C8, 4186Hz)
-    return 27.5 * Math.pow(2, ((this.toMidi() - 21.0) / 12.0))
+    return 27.5 * Math.pow(2, ((this.midi() - 21.0) / 12.0))
   }
 
   static random () {
@@ -88,13 +93,12 @@ class Note {
 
   static validate (name) {
     if (!Note.isValid(name)) {
-      console.log(name)
       throw new Error(`invalid note name: ${name}`)
     }
   }
 
   toString (includeOctave) {
-    return `${Note.names[this.name][0]}${includeOctave ? this.octave : ''}`
+    return `${Note.names[this.index][0]}${includeOctave ? this.octave : ''}`
   }
 }
 
@@ -126,7 +130,7 @@ class Interval {
     if (Note.isValid(data)) {
       this.notes.push(new Note(data))
 
-      let diff = Note.index(data) - Note.index(this.notes[0].name)
+      let diff = this.notes[1].index - this.notes[0].index
       if (diff < 0) diff += 12
       this.interval = diff
 
@@ -142,8 +146,8 @@ class Interval {
       if (!this.interval && this.interval !== 0) throw new Error(`invalid data: '${data}'`)
     }
 
-    // Compute the new note name from the interval.
-    const noteIndex = this.notes[0].name + this.interval
+    // Compute the new note index from the interval.
+    const noteIndex = this.notes[0].index + this.interval
 
     // Add the note with the default octave, use %12 to get the right note name.
     this.notes.push(new Note(noteIndex % 12))
@@ -159,7 +163,7 @@ class Interval {
       (noteIndex >= 15) ||
 
       // If the starting note is below C and the second note is above C.
-      (this.notes[0].name < 3 && noteIndex >= 3)
+      (this.notes[0].index < 3 && noteIndex >= 3)
     ) {
       this.notes[1].octave = this.notes[0].octave + 1
     }
@@ -269,9 +273,13 @@ class Scale {
     // Treat the root
     if (!root) return
 
-    Note.validate(root)
+    if (root instanceof Note) {
+      this.notes = [root]
+    } else {
+      Note.validate(root)
+      this.notes = [new Note(root)]
+    }
 
-    this.notes = [new Note(root)]
     this.name = 'major' // default name
 
     // Treat the data
@@ -293,16 +301,18 @@ class Scale {
 
   // Create the list of notes for the current scale
   noteList () {
-    const rootIndex = this.notes[0].name
+    const rootIndex = this.notes[0].index
     const tones = Scale.names[this.name].tones
-    let previousNoteMidi = this.notes[0].toMidi()
+
+    let previousNoteMidi = this.notes[0].midi()
     let octave = 4
+
     for (let i = 0, j = tones.length; i < j; i++) {
       const newNoteIndex = (rootIndex + tones[i]) % 12
       const newNote = new Note(newNoteIndex, octave)
 
       // Check that the midi notes are only increasing
-      const newNoteMidi = newNote.toMidi()
+      const newNoteMidi = newNote.midi()
       if (newNoteMidi < previousNoteMidi) {
         // Switch octave if we ever get a smaller midi note.
         octave++
@@ -311,6 +321,8 @@ class Scale {
 
       previousNoteMidi = newNoteMidi
       this.notes.push(newNote)
+
+      console.log(newNote)
     }
   }
 

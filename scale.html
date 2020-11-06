@@ -9,58 +9,105 @@
     <h1>Scale Exercises</h1>
 
     <h2>
-      <template v-if="findNote"> Name the scale </template>
-      <template v-else> Sing the scale </template>
-      <button @click="toggleExercise">&#8634;</button>
+      <details>
+        <summary> {{ exercises[currentExercise] }} </summary>
+        <p v-for="(exercise, index) in exercises" @click="currentExercise = index">
+          {{ exercise }}
+        </p>
+      </details>
     </h2>
 
     <table>
-        <th>Scale</td>
-        <th>Root</td>
-        <td> <button @click="reload()">reload</button> </td>
+      <th>Scale</td>
+      <th>Root</td>
+      <td> <button @click="reload()">reload</button> </td>
       </tr>
 
-      <tr>
-        <td id="scale">
-          <template v-if="findNote"> {{ scale.name.toString() }} </template>
-          <template v-else>
-            <template v-if="answerShown"> {{ scale.name.toString() }} </template>
-            <button v-else @click="showAnswer">show</button>
-          </template>
-        </td>
-        <td id="root">{{ scale.notes[0].toString() }}</td>
-        <td><button @click="play(0)">play</button></td>
-      </tr>
+      <template v-if="currentExercise == 0">
+        <tr>
+          <td id="scale">
+            <toggle-answer :answer="scale.name.toString()" />
+          </td>
+          <td id="root">
+            {{ scale.notes[0].toString() }}
+            <span @click="rootLocked = !rootLocked">
+              <template v-if="rootLocked"> &#x1f512; </template>
+              <template v-else> &#x1f513; </template>
+            </span>
+          </td>
+          <td><button @click="play(0)">play</button></td>
+        </tr>
 
-      <tr>
-        <th>Notes</td>
-        <td id="scale">
-          <template v-if="findNote">
-            <template v-if="answerShown"> {{ scale.notes.join(' ') }} </template>
-            <button v-else @click="showAnswer">show</button>
-          </template>
-          <template v-else>
-            {{ scale.notes.join(' ') }}
-          </template>
-        </td>
-        <td><button @click="play()">play</button></td>
-      </tr>
+        <tr>
+          <th>Notes</td>
+          <td id="scale"> {{ scale.notes.join(' ') }} </td>
+          <td><button @click="play()">play</button></td>
+        </tr>
+      </template>
+
+      <template v-if="currentExercise == 1">
+        <tr>
+          <td id="scale">
+            {{ scale.name.toString() }}
+          </td>
+          <td id="root">
+            {{ scale.notes[0].toString() }}
+            <span @click="rootLocked = !rootLocked">
+              <template v-if="rootLocked"> &#x1f512; </template>
+              <template v-else> &#x1f513; </template>
+            </span>
+          </td>
+          <td><button @click="play(0)">play</button></td>
+        </tr>
+
+        <tr>
+          <th>Notes</td>
+          <td id="scale">
+            <toggle-answer :answer="scale.notes.join(' ')" />
+          </td>
+          <td><button @click="play()">play</button></td>
+        </tr>
+      </template>
+
+
+      <template v-if="currentExercise == 2">
+        <tr>
+          <td id="scale">
+            <toggle-answer :answer="scale.name.toString()" />
+          </td>
+          <td id="root">
+            {{ scale.notes[0].toString() }}
+            <span @click="rootLocked = !rootLocked">
+              <template v-if="rootLocked"> &#x1f512; </template>
+              <template v-else> &#x1f513; </template>
+            </span>
+          </td>
+          <td><button @click="play(0)">play</button></td>
+        </tr>
+
+        <tr>
+          <th>Notes</td>
+          <td><toggle-answer :answer="scale.notes.join(' ')" /></td>
+          <td><button @click="play()">play</button></td>
+        </tr>
+      </template>
+
     </table>
 
     <details>
-       <summary>
-         Change Scales
-         <input type="text" v-model="selectedScalesValue">
-       </summary>
-        <div id="input-selection">
-          <span @click="unselect()">all</span>
-          <template v-for="(scale, index) in scaleList">
-            <span>
-              <input type="checkbox" :id="index" :value="index" v-model="selectedScales">
-              <label :for="index">{{ scale }}</label>
-            </span>
-        </div>
-      </template>
+      <summary>
+        Change Scales
+        <input type="text" v-model="selectedScalesValue">
+      </summary>
+      <div id="input-selection">
+        <span @click="unselect()">all</span>
+        <template v-for="(scale, index) in scaleList">
+          <span>
+            <input type="checkbox" :id="index" :value="index" v-model="selectedScales">
+            <label :for="index">{{ scale }}</label>
+          </span>
+      </div>
+        </template>
     </details>
 
     <script src="js/vue.js"></script>

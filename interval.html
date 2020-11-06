@@ -37,36 +37,20 @@
       </tr>
 
       <tr v-if="currentExercise == 0">
-        <td id="interval">
-          {{ interval.name() }}
-        </td>
-        <td id="target">
-          <template v-if="answerShown"> {{ interval.notes[1].toString() }} </template>
-          <button v-else @click="showAnswer">show</button>
-        </td>
+        <td> {{ interval.name() }} </td>
+        <td> <toggle-answer :answer="interval.notes[1].toString()" /> </td>
         <td><button @click="play(1)">play</button></td>
       </tr>
 
       <tr v-if="currentExercise == 1">
-        <td id="interval">
-          <template v-if="answerShown"> {{ interval.name() }} </template>
-          <button v-else @click="showAnswer">show</button>
-        </td>
-        <td id="target">
-          {{ interval.notes[1].toString() }}
-        </td>
+        <td> <toggle-answer :answer="interval.name()" /> </td>
+        <td> {{ interval.notes[1].toString() }} </td>
         <td><button @click="play(1)">play</button></td>
       </tr>
 
       <tr v-if="currentExercise == 2">
-        <td id="interval">
-          <template v-if="answerShown"> {{ interval.name() }} </template>
-          <button v-else @click="showAnswer">show</button>
-        </td>
-        <td id="target">
-          <template v-if="answerShown"> {{ interval.notes[1].toString() }} </template>
-          <button v-else @click="showAnswer">show</button>
-        </td>
+        <td> <toggle-answer :answer="interval.name()" /> </td>
+        <td> <toggle-answer :answer="interval.notes[1].toString()" /> </td>
         <td><button @click="play(1)">play</button></td>
       </tr>
 
@@ -74,19 +58,19 @@
     </table>
 
     <details>
-       <summary>
-         Change intervals
-         <input type="text" v-model="selectedIntervalsValue">
-       </summary>
-        <div id="input-selection">
-          <span @click="unselect()">all</span>
-          <template v-for="(interval, index) in intervalList">
-            <span>
-              <input type="checkbox" :id="index" :value="index" v-model="selectedIntervals">
-              <label :for="index">{{ interval }}</label>
-            </span>
-        </div>
-      </template>
+      <summary>
+        Change intervals
+        <input type="text" v-model="selectedIntervalsValue">
+      </summary>
+      <div id="input-selection">
+        <span @click="unselect()">all</span>
+        <template v-for="(interval, index) in intervalList">
+          <span>
+            <input type="checkbox" :id="index" :value="index" v-model="selectedIntervals">
+            <label :for="index">{{ interval }}</label>
+          </span>
+      </div>
+        </template>
     </details>
 
     <script src="js/vue.js"></script>

@@ -2,7 +2,7 @@
 
 var synth = new Synth()
 
-Vue.createApp({
+const app = Vue.createApp({
   data () {
     return {
       interval: Interval.random(),
@@ -22,7 +22,6 @@ Vue.createApp({
     selectedIntervalsValue: {
       get () {
         // Add each found selected intervals index in a single binary number.
-        console.log(this.selectedIntervals)
         const value = this.selectedIntervals
           .sort((a, b) => a < b)
           .reduce((a, b) => a + (1 << b), 0)
@@ -50,7 +49,7 @@ Vue.createApp({
   methods: {
     reload () {
       this.interval = Interval.random(
-        this.rootLocked ? this.interval.notes[0] : null,
+        this.rootLocked ? this.interval.notes[0].name : null,
         this.selectedIntervals
       )
       this.answerShown = false
@@ -64,6 +63,20 @@ Vue.createApp({
     showAnswer () {
       this.answerShown = true
     }
+  },
+  watch: {
+    currentExercise () {
+      this.reload()
+    }
   }
-}
-).mount('#interval-exercises')
+})
+
+app.component('toggle-answer', {
+  props: ['answer'],
+  template: `
+    <template v-if="$parent.answerShown"> {{ answer }} </template>
+    <button v-else @click="$parent.answerShown = true">show</button>
+  `
+})
+
+app.mount('#interval-exercises')
