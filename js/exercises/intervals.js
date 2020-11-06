@@ -8,7 +8,13 @@ Vue.createApp({
       interval: Interval.random(),
       intervalList: Interval.names,
       answerShown: false,
-      findNote: true,
+      rootLocked: false,
+      currentExercise: 0,
+      exercises: [
+        'Sing and name the note',
+        'Sing and name the interval',
+        'Sing and name the note and interval'
+      ],
       selectedIntervals: []
     }
   },
@@ -43,7 +49,10 @@ Vue.createApp({
   },
   methods: {
     reload () {
-      this.interval = Interval.random(null, this.selectedIntervals)
+      this.interval = Interval.random(
+        this.rootLocked ? this.interval.notes[0] : null,
+        this.selectedIntervals
+      )
       this.answerShown = false
     },
     unselect () {
@@ -54,10 +63,6 @@ Vue.createApp({
     },
     showAnswer () {
       this.answerShown = true
-    },
-    toggleExercise () {
-      this.findNote = !this.findNote
-      this.reload()
     }
   }
 }

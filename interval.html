@@ -9,9 +9,12 @@
     <h1>Interval Exercises</h1>
 
     <h2>
-      <template v-if="findNote"> Sing and name the note </template>
-      <template v-else> Sing and name the interval </template>
-      <button @click="toggleExercise">&#8634;</button>
+      <details>
+        <summary> {{ exercises[currentExercise] }} </summary>
+        <p v-for="(exercise, index) in exercises" @click="currentExercise = index">
+          {{ exercise }}
+        </p>
+      </details>
     </h2>
 
     <table>
@@ -23,31 +26,51 @@
 
       <tr>
         <td></td>
-        <td id="root">{{ interval.notes[0].toString() }}</td>
+        <td id="root">
+          {{ interval.notes[0].toString() }}
+          <span @click="rootLocked = !rootLocked">
+            <template v-if="rootLocked"> &#x1f512; </template>
+            <template v-else> &#x1f513; </template>
+          </span>
+        </td>
         <td><button @click="play(0)">play</button></td>
       </tr>
 
-      <tr>
+      <tr v-if="currentExercise == 0">
         <td id="interval">
-          <template v-if="findNote">
-            {{ interval.name() }}
-          </template>
-          <template v-else>
-            <template v-if="answerShown"> {{ interval.name() }} </template>
-            <button v-else @click="showAnswer">show</button>
-          </template>
+          {{ interval.name() }}
         </td>
         <td id="target">
-          <template v-if="findNote">
-            <template v-if="answerShown"> {{ interval.notes[1].toString() }} </template>
-            <button v-else @click="showAnswer">show</button>
-          </template>
-          <template v-else>
-            {{ interval.notes[1].toString() }}
-          </template>
+          <template v-if="answerShown"> {{ interval.notes[1].toString() }} </template>
+          <button v-else @click="showAnswer">show</button>
         </td>
         <td><button @click="play(1)">play</button></td>
       </tr>
+
+      <tr v-if="currentExercise == 1">
+        <td id="interval">
+          <template v-if="answerShown"> {{ interval.name() }} </template>
+          <button v-else @click="showAnswer">show</button>
+        </td>
+        <td id="target">
+          {{ interval.notes[1].toString() }}
+        </td>
+        <td><button @click="play(1)">play</button></td>
+      </tr>
+
+      <tr v-if="currentExercise == 2">
+        <td id="interval">
+          <template v-if="answerShown"> {{ interval.name() }} </template>
+          <button v-else @click="showAnswer">show</button>
+        </td>
+        <td id="target">
+          <template v-if="answerShown"> {{ interval.notes[1].toString() }} </template>
+          <button v-else @click="showAnswer">show</button>
+        </td>
+        <td><button @click="play(1)">play</button></td>
+      </tr>
+
+
     </table>
 
     <details>
