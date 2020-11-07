@@ -23,7 +23,6 @@ const app = Vue.createApp({
     selectedScalesValue: {
       get () {
         // Add each found selected scales index in a single binary number.
-        console.log(this.selectedScales)
         const value = this.selectedScales
           .sort((a, b) => a < b)
           .reduce((a, b) => a + (1 << b), 0)

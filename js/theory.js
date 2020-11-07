@@ -1,26 +1,74 @@
 class Note {
   // All note names with absolute positions, same "value" will be in the same position.
-  static names = [['A'], ['A#', 'Bb'], ['B', 'Cb'], ['C', 'B#'], ['C#', 'Db'], ['D'], ['D#', 'Eb'], ['E', 'Fb'], ['F', 'E#'], ['F#', 'Gb'], ['G'], ['G#', 'Ab']]
+  static names = [
+    ['G##', 'A', 'Bbb'],
+    ['A#', 'Bb', 'Cbb'],
+    ['A##', 'B', 'Cb'],
+    ['B#', 'C', 'Dbb'],
+    ['B##', 'C#', 'Db'],
+    ['C##', 'D', 'Ebb'],
+    ['D#', 'Eb', 'Fbb'],
+    ['D##', 'E', 'Fb'],
+    ['E#', 'F', 'Gbb'],
+    ['E##', 'F#', 'Gb'],
+    ['F##', 'G', 'Abb'],
+    ['G#', 'Ab']
+  ]
+
+  // All natural names.
+  static naturals = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+
   // All note names without position, used for quick validity check.
   static allNames = [].concat.apply([], Note.names)
+  static basicNames = Note.allNames.filter(a => a.length !== 3)
   // There are 12 tones in standard western tuning.
   static count = 12
 
-  constructor (note, octave) {
+  // List of accidentals per key, only sharps. Flats can be computed from 12-sharps
+  // Sharps are generally below 6, flats above.
+  static accidentals = [3, 10, 5, 0, 7, 2, 9, 4, 11, 6, 1, 8]
+
+  constructor (note, octave, accidental) {
+    this.accidental = '' // Default, will be updated below
+    this.octave = (octave !== 0 && !octave) ? 4 : octave // Default to octave 4
+
+    let index = 0
+
+    // Handle the note
     if (isFinite(String(note)) && note >= 0 && note <= 12) {
       // Note is an index, e.g. '1'
-      note = parseInt(note, 10)
-
-      this.index = note
-      this.name = Note.indexToName(note)
+      index = parseInt(note, 10)
+      this.natural = Note.names[index][1][0]
     } else {
       // Note is a name, e.g. 'A'
       Note.validate(note)
-
-      this.name = note
-      this.index = Note.nameToIndex(note)
+      index = Note.nameToIndex(note)
+      this.natural = note[0]
     }
-    this.octave = (octave !== 0 && !octave) ? 4 : octave // default to octave 4
+
+    if (accidental === '#') {
+      index = (index + 1) % 12
+    } else if (accidental === '##') {
+      index = (index + 2) % 12
+    } else if (accidental === 'b') {
+      index = (index + 11) % 12
+    } else if (accidental === 'bb') {
+      index = (index + 10) % 12
+    } else {
+      // If the parametered accidental is nil but the given note name had one,
+      // we need to keep it into account. It doesn't shift the index, just
+      // might change the note name.
+      if (note.length > 1) {
+        accidental = note.slice(1, note.length)
+      }
+    }
+
+    this.index = index
+    this.name = Note.indexToName(index, this.natural)
+
+    if (this.name.length > 1) {
+      this.accidental = accidental
+    }
   }
 
   // Index compute the index relative to the note names.
@@ -33,21 +81,14 @@ class Note {
     }
   }
 
-  // Name computes a note name from index with the right accidental if specified.
-  static indexToName (index, accidental) {
+  // Name computes a note name from the index and the natural.
+  static indexToName (index, natural) {
     const candidates = Note.names[index]
     if (!candidates) {
       throw new Error(`invalid note index: ${index}`)
     }
 
-    if (candidates.length === 1 || !accidental) {
-      // Return the note name iff there's only one possibility, or if the
-      // accidental is not specified.
-      return candidates[0]
-    } else {
-      // TODO, have some logic here to return `b` or `#` when better.
-      return candidates[0]
-    }
+    return candidates.filter(name => name[0] === natural)[0]
   }
 
   // fromMidi create a note from the midi value.
@@ -61,6 +102,20 @@ class Note {
     const octave = Math.floor((midi - 12) / 12)
 
     return new Note(names[0], octave)
+  }
+
+  // Return the accidental signature of the key, e.g. 4b, 0, 6#
+  signature () {
+    const count = Note.accidentals[this.index]
+
+    if (count === 0) return '0'
+
+    if (this.accidental === '') {
+      if (count <= 6) return count + '#'
+      return (12 - count) + 'b'
+    }
+
+    return (this.accidental === '#' ? count : 12 - count) + this.accidental
   }
 
   // midi exports the midi value of the note
@@ -84,7 +139,7 @@ class Note {
   }
 
   static random () {
-    return Note.allNames[Math.random() * Note.count << 0]
+    return Note.basicNames[Math.random() * Note.basicNames.length << 0]
   }
 
   static isValid (name) {
@@ -98,7 +153,12 @@ class Note {
   }
 
   toString (includeOctave) {
-    return `${Note.names[this.index][0]}${includeOctave ? this.octave : ''}`
+    const name = this.name
+      .replaceAll('bb', '𝄫')
+      .replaceAll('##', '𝄪')
+      .replace('b', '♭')
+      .replace('#', '♯')
+    return `${name}${includeOctave ? this.octave : ''}`
   }
 }
 
@@ -263,8 +323,15 @@ class Chord {
 class Scale {
   static names = {
     major: { tones: [2, 4, 5, 7, 9, 11], intervals: [2, 2, 1, 2, 2, 2, 1] },
+    ionian: { tones: [2, 4, 5, 7, 9, 11], intervals: [2, 2, 1, 2, 2, 2, 1] },
+    dorian: { tones: [2, 3, 5, 7, 9, 10], intervals: [2, 1, 2, 2, 2, 1, 2] },
+    phrygian: { tones: [1, 3, 5, 7, 8, 10], intervals: [1, 2, 2, 2, 1, 2, 2] },
+    // continue in https://en.wikipedia.org/wiki/Mode_(music)#Analysis
     'harmonic minor': { tones: [2, 3, 5, 7, 8, 10], intervals: [2, 1, 2, 2, 1, 2, 2] },
     pentatonic: { tones: [2, 4, 7, 9], intervals: [2, 2, 3, 2, 2, 3] }
+    // Not yet well supported
+    // 'whole-tone': { tones: [2, 4, 6, 8, 10], intervals: [2, 2, 2, 2, 2, 2] },
+    // chromatic: { tones: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], intervals: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] }
   }
 
   static allNames = Object.keys(Scale.names)
@@ -289,40 +356,54 @@ class Scale {
       // Data is the scale name, compute the notes
       if (Scale.names[data[0]]) {
         this.name = data[0]
-        this.noteList()
       } else {
-        throw new Error(`invalid arguments: ${data}`)
+        throw new Error(`invalid scale arguments: ${data}`)
       }
     } else {
       // Data is the list of notes names, TODO
       throw new Error('doesn\'t handle multiple arguments yet')
     }
+
+    this.noteList()
   }
 
   // Create the list of notes for the current scale
   noteList () {
     const rootIndex = this.notes[0].index
+    // const rootAccidental = this.notes[0].accidental
     const tones = Scale.names[this.name].tones
+    const intervals = Scale.names[this.name].intervals
 
-    let previousNoteMidi = this.notes[0].midi()
+    let previousNote = this.notes[0]
+    let natural = Note.naturals.indexOf(this.notes[0].name[0])
     let octave = 4
 
+    debugger
     for (let i = 0, j = tones.length; i < j; i++) {
       const newNoteIndex = (rootIndex + tones[i]) % 12
-      const newNote = new Note(newNoteIndex, octave)
+      let newNote = new Note(newNoteIndex, octave)
 
-      // Check that the midi notes are only increasing
-      const newNoteMidi = newNote.midi()
-      if (newNoteMidi < previousNoteMidi) {
-        // Switch octave if we ever get a smaller midi note.
-        octave++
-        newNote.octave = octave
+      // Skipping a note when jumping by a third.
+      if (intervals[i] === 3) {
+        natural++
       }
 
-      previousNoteMidi = newNoteMidi
-      this.notes.push(newNote)
+      const expectedNatural = Note.naturals[++natural % 7]
 
-      console.log(newNote)
+      // The expected natural isn't right, we need to switch it.
+      if (expectedNatural !== newNote.name[0]) {
+        const newName = Note.names[newNote.index].filter(name => name[0] === expectedNatural)[0]
+        if (newName) newNote = new Note(newName, octave)
+      }
+
+      // Check that the midi notes are only increasing
+      if (newNote.midi() < previousNote.midi()) {
+        // Switch octave if we ever get a smaller midi note.
+        newNote.octave = ++octave
+      }
+
+      previousNote = newNote
+      this.notes.push(newNote)
     }
   }
 
