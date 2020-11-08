@@ -67,7 +67,7 @@ class Note {
     this.name = Note.indexToName(index, this.natural)
 
     if (this.name.length > 1) {
-      this.accidental = accidental
+      this.accidental = this.name.slice(1, this.name.length)
     }
   }
 
@@ -281,7 +281,7 @@ class Chord {
 
     Note.validate(root)
 
-    this.notes = [root]
+    this.notes = [new Note(root)]
     this.name = '' // default name
 
     // Treat the data
@@ -291,10 +291,9 @@ class Chord {
       // Data is the chord name, compute the notes
       const chord = Chord.names[data[0]]
       if (chord) {
-        this.name = data
-        const rootIndex = Note.index(root)
+        this.name = data[0]
         for (let i = 0, j = chord.tones.length; i < j; i++) {
-          this.notes.push(Note.name((rootIndex + chord.tones[i]) % 12))
+          this.notes.push(new Note((this.notes[0].index + chord.tones[i]) % 12))
         }
       } else {
         throw new Error(`invalid arguments: ${data}`)
@@ -314,8 +313,12 @@ class Chord {
     return new Chord(root, name)
   }
 
-  toString () {
-    return `${this.notes[0]} ${this.name}: ${this.notes.join(' ')}`
+  toString (detailed) {
+    let ret = `${this.notes[0]} ${this.name}`
+    if (detailed) {
+      ret += `: ${this.notes.join(' ')}`
+    }
+    return ret
   }
 }
 
@@ -378,7 +381,6 @@ class Scale {
     let natural = Note.naturals.indexOf(this.notes[0].name[0])
     let octave = 4
 
-    debugger
     for (let i = 0, j = tones.length; i < j; i++) {
       const newNoteIndex = (rootIndex + tones[i]) % 12
       let newNote = new Note(newNoteIndex, octave)

@@ -10,4 +10,12 @@ body {
     font-weight: 100;
     text-transform: uppercase;
   }
+
+  #menu {
+    font-size: 3em;
+    list-style-type: none;
+    a {
+      color: black;
+    }
+  }
 }

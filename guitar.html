@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Scale Exercises</title>
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body id="guitar-exercises" class="exercise">
+    <h1>Guitar Exercises</h1>
+
+    <h2>
+      <details>
+        <summary>{{ exercises[currentExercise] }}</summary>
+        <p
+          v-for="(exercise, index) in exercises"
+          @click="currentExercise = index"
+        >
+          {{ exercise }}
+        </p>
+      </details>
+    </h2>
+
+    <template v-if="currentExercise == 0">
+      <ul id="chordList">
+        <li v-for="chord in chords" :title="chord.notes.join(' ')" @click="playChord(chord)">
+            {{ chord.toString() }}
+          </span>
+        </li>
+      </ul>
+      <button @click="reloadChords">reload</button>
+    </template>
+
+    <script src="js/vue.js"></script>
+    <script src="js/theory.js"></script>
+    <script src="js/synth.js"></script>
+    <script src="js/exercises/guitar.js"></script>
+  </body>
+</html>
