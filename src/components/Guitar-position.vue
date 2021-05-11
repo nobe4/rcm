@@ -18,14 +18,13 @@
 					:data-muted="p === 0 && chord.strings[s].muted ? true : undefined"
 					:data-on="chord.strings[s].position === p ? true : undefined"
 					:data-bar="
-						chord.position > 0 && chord.strings[s].position === p
+						chord.position >= 0 && chord.strings[s].position === p
 							? chord.strings[s].bar
 							: undefined
 					"
 					:data-position="p === 0 && s === 0 ? chord.position : undefined"
 				>
 					<span v-if="p == 4 && s == 0" @click="current++">next</span>
-					{{}}
 				</td>
 			</tr>
 		</table>
