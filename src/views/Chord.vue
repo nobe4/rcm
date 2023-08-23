@@ -1,5 +1,11 @@
 <template>
 	<div class="exercise">
+		<template :key="c" v-for="c in chords">
+			<div>{{ c.toString() }}</div>
+			<guitar-position :chords="c.toGuitarPosition()" />
+			<hr />
+		</template>
+
 		<h1>Chord Exercises</h1>
 
 		<div class="exercise-selection">
@@ -112,6 +118,7 @@
 				exercises: ['Play the chord', 'Name the chord'],
 				currentExercise: 0,
 				chord: Chord.random(),
+				chords: Chord.allMod(),
 			}
 		},
 		methods: {

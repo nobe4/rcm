@@ -329,6 +329,10 @@ class Chord {
 		return new Chord(root, name)
 	}
 
+	static allMod() {
+		return Object.keys(this.names).map((m) => new Chord('A', m))
+	}
+
 	// Convert to a list of possible guitar positions.
 	toGuitarPosition() {
 		// compute the neck position for the note
